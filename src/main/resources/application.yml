@@ -33,6 +33,7 @@ mybatis:
     map-underscore-to-camel-case: true # 데이터베이스의 언더스코어 네이밍(column_name)
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # SQL 로깅 구현체를 설정합니다.
 
+
 logging:
   level:
     org.apache.ibatis: DEBUG # MyBatis 로깅 레벨을 DEBUG로 설정하여 실행되는 SQL 쿼리와 내부 로깅 정보를 콘솔에 출력한다.
