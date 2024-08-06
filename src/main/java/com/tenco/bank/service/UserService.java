@@ -14,10 +14,14 @@ import com.tenco.bank.repository.interfaces.UserRepository;
 @Service // IoC의 대상(싱글톤으로 관리되는 객체)
 public class UserService {
 
-	// DI - 의존 주입
-	@Autowired
 	private UserRepository userRepository;
 	// 구현 객체가 없는데 어떻게 인터페이스 객체를 생성해주지 ? mapper 때문에 ?
+	
+	// DI - 의존 주입
+	@Autowired
+	public UserService(UserRepository repository) {
+		this.userRepository = repository;
+	}
 
 	/**
 	 * 회원 등록 서비스 기능
