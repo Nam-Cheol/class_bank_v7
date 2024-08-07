@@ -31,11 +31,10 @@ public class UserService {
 	@Transactional // 트랜잭션 처리는 반드시 습관화
 	public void createUser(SignUpDTO dto) {
 		int result = 0;
-		// ??????????????
 		try {
 			result = userRepository.insert(dto.toUser());
 		} catch (DataAccessException e) {
-			throw new DataDeliveryException("잘못된 처리입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new DataDeliveryException("중복된 아이디입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
 			// 다른 오류라면
 			throw new RedirectException("알 수 없는 오류", HttpStatus.SERVICE_UNAVAILABLE);
