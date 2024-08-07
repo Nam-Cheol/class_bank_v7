@@ -35,4 +35,13 @@
 		FROM user_tb
 	</select>
 	
+	<select id="findByUsernameAndPassword" resultType="com.tenco.bank.repository.model.User">
+		SELECT *
+		FROM user_tb
+		WHERE
+		username = #{username}
+		AND
+		password = #{password}
+	</select>
+	
 </mapper>
