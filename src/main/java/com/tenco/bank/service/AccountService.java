@@ -220,11 +220,19 @@ public class AccountService {
 	 * @return 전체, 입금, 출금 거래 내역 (3가지 타입) 반환
 	 */
 //	@Transactional >> 거래내역은 insert 등이 빈번하게 일어나서 팬텀리드 현상 발생 가능성 多
-	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId) {
+	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId, Integer page, Integer pageSize) {
 		List<HistoryAccount> list = new ArrayList<>();
-		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId);
+		
+		int offset = (page-1) * pageSize;
+		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId, pageSize, offset);
 		
 		return list;
+	}
+	
+	// 리스트 사이즈 반환
+	public Integer readHistorySize(String type, Integer accountId) {
+		int size = historyRepository.findListSizeByAccountId(type, accountId);
+		return size;
 	}
 
 }

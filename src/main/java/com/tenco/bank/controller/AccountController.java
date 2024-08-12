@@ -1,10 +1,13 @@
 package com.tenco.bank.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tenco.bank.dto.DepositDTO;
 import com.tenco.bank.dto.SaveDTO;
@@ -258,7 +262,7 @@ public class AccountController {
 	 * @return
 	 */
 	@GetMapping("/detail/{accountId}")
-	public String detail(@PathVariable(name = "accountId") Integer accountId, @RequestParam(required = false, name = "type") String type, Model model) {
+	public String detail(@PathVariable(name = "accountId") Integer accountId, @RequestParam(required = false, name = "type") String type, @RequestParam(name = "page") Integer page, Model model) {
 
 		// 1. 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
@@ -275,13 +279,39 @@ public class AccountController {
 		
 		// 3. 서비스 호출
 		Account account = service.readAccountById(accountId);
-		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId);
+		
+		int pageSize = 3;
+		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId, page, pageSize);
+		Integer totalSize = (int) Math.ceil((double)service.readHistorySize(type, accountId) / (double) pageSize);
 		
 		// 4. 모델에 속성 저장
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
-		
+		model.addAttribute("totalSize", totalSize);
+		// TODO - 현재 페이지 스타일 주기, 다음 페이지 만들기
+		model.addAttribute("currentPage", page);
 		return "account/detail";
 	}
+	
+		@GetMapping("/detailNext/{accountId}")
+	    @ResponseBody
+	    public ResponseEntity<Map<String, Object>> getAccountDetails(
+	    		@PathVariable(name = "accountId") Integer accountId
+	    		, @RequestParam(required = false, name = "type") String type
+	    		, @RequestParam(name = "page") Integer page) {
+
+	        // 서비스 로직 호출하여 필요한 데이터를 가져옴
+			int pageSize = 3;
+	        List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId, page, pageSize);
+	        Integer totalSize = service.readHistorySize(type, accountId);
+
+	        // 데이터를 맵에 담아 반환
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("historyList", historyList);
+	        response.put("totalSize", totalSize);
+	        response.put("type", type);
+
+	        return ResponseEntity.ok(response);
+	    }
 	
 }

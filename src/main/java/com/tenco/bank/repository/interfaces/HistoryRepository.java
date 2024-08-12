@@ -24,4 +24,7 @@ public interface HistoryRepository {
 	// join query, sub query
 	public List<HistoryAccount> findByAccountIdAndTypeOfHistory(@Param("type") String type, @Param("accountId") Integer accountId);
 	
+	public List<HistoryAccount> findByAccountIdAndTypeOfHistory(@Param("type") String type, @Param("accountId") Integer accountId, @Param("limit") Integer limit, @Param("offset") Integer offset);
+	
+	public Integer findListSizeByAccountId(@Param("type") String type, @Param("accountId") Integer accountId);
 }
