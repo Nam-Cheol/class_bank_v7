@@ -55,6 +55,7 @@
 			LEFT JOIN account_tb AS da
 			ON h.d_account_id = da.id
 			WHERE h.w_account_id = #{accountId} OR h.d_account_id = #{accountId}
+			ORDER BY h.created_at DESC
 			
 		</if>
 		
@@ -69,6 +70,7 @@
 			LEFT JOIN account_tb AS da
 			ON da.id = h.d_account_id
 			WHERE h.d_account_id = #{accountId}
+			ORDER BY h.created_at DESC
 		
 		</if>
 		
@@ -83,6 +85,7 @@
 			LEFT JOIN account_tb AS da
 			ON da.id = h.d_account_id
 			WHERE h.w_account_id = #{accountId}
+			ORDER BY h.created_at DESC
 		
 		</if>
 		
