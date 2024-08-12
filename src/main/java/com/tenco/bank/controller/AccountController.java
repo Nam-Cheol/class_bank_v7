@@ -258,7 +258,12 @@ public class AccountController {
 	 * @return
 	 */
 	@GetMapping("/detail/{accountId}")
-	public String detail(@PathVariable(name = "accountId") Integer accountId, @RequestParam(required = false, name = "type") String type, Model model) {
+	public String detail(
+			@PathVariable(name = "accountId") Integer accountId
+			, @RequestParam(required = false, name = "type") String type
+			, @RequestParam(name = "page", defaultValue = "1") Integer page
+			, @RequestParam(name = "size", defaultValue = "2") Integer size
+			, Model model) {
 
 		// 1. 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
@@ -273,13 +278,21 @@ public class AccountController {
 			throw new DataDeliveryException("유효하지 않은 접근입니다.", HttpStatus.BAD_REQUEST);
 		}
 		
+		// 페이지 개수를 계산하기 위해서 총 페이지 수를 계산해주어야 한다.
+		int totalRecords = service.countHistoryByAccountIdAndType(type, accountId);
+		int totalPages = (int) Math.ceil((double) totalRecords / (double) size);
+		
 		// 3. 서비스 호출
 		Account account = service.readAccountById(accountId);
-		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId);
+		List<HistoryAccount> historyList = service.readHistoryByAccountId(type, accountId, page, size);
 		
 		// 4. 모델에 속성 저장
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("type", type);
+		model.addAttribute("size", size);
 		
 		return "account/detail";
 	}

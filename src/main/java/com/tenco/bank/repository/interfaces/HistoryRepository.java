@@ -22,6 +22,12 @@ public interface HistoryRepository {
 	
 	// 코드 추가 예정 - 모델을 반드시 1 : 1 엔터티에 매핑을 시킬 필요는 없다.
 	// join query, sub query
-	public List<HistoryAccount> findByAccountIdAndTypeOfHistory(@Param("type") String type, @Param("accountId") Integer accountId);
+	public List<HistoryAccount> findByAccountIdAndTypeOfHistory(
+			@Param("type") String type
+			, @Param("accountId") Integer accountId
+			, @Param("limit") int limit
+			, @Param("offset") int offset);
+	
+	public int countByAccountIdAndType(@Param("type") String type, @Param("accountId") Integer accountId);
 	
 }
