@@ -93,7 +93,9 @@ public class AccountController {
 	 * @return
 	 */
 	@GetMapping({ "/list", "/" })
-	public String listPage(Model model) {
+	public String listPage(Model model
+			, @RequestParam(name = "page", defaultValue = "1") Integer page
+			, @RequestParam(name = "size", defaultValue = "2") Integer size) {
 
 		// 1. 인증검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
@@ -101,17 +103,20 @@ public class AccountController {
 			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
 		}
 
-		// 2. 유효성 검사
-
-		// 3. 서비스 호출
-		List<Account> accountList = service.readAccountListByUserId(principal.getId());
-
+		List<Account> accountList = service.readAccountListByUserId(principal.getId(), page, size);
+		
 		// JSP에 데이터를 넣어주는 방법
 		if (accountList.isEmpty()) {
 			model.addAttribute("accountList", null);
 		} else {
 			model.addAttribute("accountList", accountList);
 		}
+		
+		int totalRecords = service.countAccountByUserId(principal.getId());
+		int totalPages = (int) Math.ceil((double) totalRecords / size);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("size", size);
 
 		return "account/list";
 	}

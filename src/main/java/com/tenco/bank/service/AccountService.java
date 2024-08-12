@@ -61,11 +61,16 @@ public class AccountService {
 
 	}
 
-	public List<Account> readAccountListByUserId(@Param("userId") Integer principalId) {
+	public List<Account> readAccountListByUserId(@Param("userId") Integer principalId
+					, @Param("page") Integer page
+					, @Param("size") Integer size) {
 		List<Account> accountListEntity = null;
 
+		int limit = size;
+		int offset = (page - 1) * size;
+		
 		try {
-			accountListEntity = accountRepository.findByUserId(principalId);
+			accountListEntity = accountRepository.findByUserId(principalId, limit, offset);
 		} catch (DataAccessException e) {
 			throw new DataDeliveryException(Define.INVALID_INPUT, HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
@@ -232,6 +237,11 @@ public class AccountService {
 	// 해당 계좌와 거래 유형에 따른 전체 레코드 수를 반환하는 메소드
 	public int countHistoryByAccountIdAndType(String type, Integer accountId) {
 		return historyRepository.countByAccountIdAndType(type, accountId);
+	}
+	
+	// 해당 유저의 계좌가 몇 개 있는 지
+	public int countAccountByUserId(Integer principalId) {
+		return accountRepository.countByUserId(principalId);
 	}
 
 }
