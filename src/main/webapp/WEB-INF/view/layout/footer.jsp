@@ -2,7 +2,6 @@
 
 </div>
 </div>
-</div>
 <!-- start of footer.jsp -->
 <div class="jumbotron text-center" style="margin-bottom: 0">
 	<p>Footer</p>

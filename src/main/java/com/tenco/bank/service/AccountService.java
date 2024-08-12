@@ -1,5 +1,6 @@
 package com.tenco.bank.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,7 @@ import com.tenco.bank.repository.interfaces.AccountRepository;
 import com.tenco.bank.repository.interfaces.HistoryRepository;
 import com.tenco.bank.repository.model.Account;
 import com.tenco.bank.repository.model.History;
+import com.tenco.bank.repository.model.HistoryAccount;
 import com.tenco.bank.utils.Define;
 
 @Service
@@ -196,4 +198,33 @@ public class AccountService {
 		}
 	}
 	
+	/**
+	 * 단일 계좌 조회 기능 (accountId 기준)
+	 * @param accountId (pk)
+	 * @return 단일 계좌 상세 내역
+	 */
+	public Account readAccountById(Integer accountId) {
+		Account accountEntity = accountRepository.findByAccountId(accountId);
+		
+		if (accountEntity == null) {
+			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return accountEntity;
+	}
+
+	/**
+	 * 단일 계좌 거래 내역 조회
+	 * @param type = [all, deposit, withdrawal]
+	 * @param accountId (pk)
+	 * @return 전체, 입금, 출금 거래 내역 (3가지 타입) 반환
+	 */
+//	@Transactional >> 거래내역은 insert 등이 빈번하게 일어나서 팬텀리드 현상 발생 가능성 多
+	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId) {
+		List<HistoryAccount> list = new ArrayList<>();
+		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId);
+		
+		return list;
+	}
+
 }

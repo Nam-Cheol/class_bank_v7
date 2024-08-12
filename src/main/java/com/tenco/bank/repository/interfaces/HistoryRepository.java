@@ -3,8 +3,10 @@ package com.tenco.bank.repository.interfaces;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.tenco.bank.repository.model.History;
+import com.tenco.bank.repository.model.HistoryAccount;
 
 //HistoryRepository 인터페이스와 history.xml 파일을 매칭 시킨다.
 @Mapper
@@ -20,5 +22,6 @@ public interface HistoryRepository {
 	
 	// 코드 추가 예정 - 모델을 반드시 1 : 1 엔터티에 매핑을 시킬 필요는 없다.
 	// join query, sub query
+	public List<HistoryAccount> findByAccountIdAndTypeOfHistory(@Param("type") String type, @Param("accountId") Integer accountId);
 	
 }

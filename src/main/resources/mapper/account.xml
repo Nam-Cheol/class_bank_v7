@@ -36,4 +36,10 @@
 		WHERE number = #{number}
 	</select>
 	
+	<select id="findByAccountId" resultType="com.tenco.bank.repository.model.Account">
+		SELECT *
+		FROM account_tb
+		WHERE id = #{accountId}
+	</select>
+	
 </mapper>

@@ -16,8 +16,6 @@
       <p>Some text..</p>
       <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
     </div>
-  </div>
-</div>
 <!-- end of content.jsp (xxx.jsp) -->
 
 <%@include file="/WEB-INF/view/layout/footer.jsp" %>

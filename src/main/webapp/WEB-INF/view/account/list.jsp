@@ -12,7 +12,7 @@
 	<c:choose>
 		<c:when test="${accountList != null}">
 			<%-- 계좌 존재 : html 주석을 사용하면 오류발생 (jstl 태그 안에서) --%>
-			<table>
+			<table class="table">
 				<thead>
 					<tr>
 						<th>계좌 번호</th>
@@ -22,7 +22,7 @@
 				<tbody>
 					<c:forEach var="account" items="${accountList}">
 						<tr>
-							<td>${account.number}</td>
+							<td><a href="/account/detail/${account.id}?type=all">${account.number}</a></td>
 							<td>${account.balance}</td>
 						</tr>
 					</c:forEach>
