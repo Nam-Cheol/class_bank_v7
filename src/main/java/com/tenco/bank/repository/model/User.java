@@ -2,6 +2,8 @@ package com.tenco.bank.repository.model;
 
 import java.sql.Timestamp;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +21,7 @@ public class User {
 	private String password;
 	private String fullName;
 	private Timestamp createdAt;
+	private MultipartFile mFile;
+	private String originFileName;
+	private String uploadFileName;
 }

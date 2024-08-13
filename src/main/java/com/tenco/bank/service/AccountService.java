@@ -23,17 +23,15 @@ import com.tenco.bank.repository.model.History;
 import com.tenco.bank.repository.model.HistoryAccount;
 import com.tenco.bank.utils.Define;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
+	@Autowired
 	private final AccountRepository accountRepository;
 	private final HistoryRepository historyRepository;
-
-	@Autowired
-	public AccountService(AccountRepository accountRepository, HistoryRepository historyRepository) {
-		this.accountRepository = accountRepository;
-		this.historyRepository = historyRepository;
-	}
 
 	/**
 	 * 계좌 생성 기능
@@ -84,7 +82,7 @@ public class AccountService {
 	// 6. 거래 내역 등록 -- insert(history)
 	// 7. 트랜잭션 처리
 	@Transactional
-	public void updateAccountWithdraw(WithdrawalDTO dto, Integer principalId) {
+	public void updateAccountWithdraw(WithdrawalDTO dto, @Param("userId") Integer principalId) {
 
 		Account accountEntity = accountRepository.findByNumber(dto.getWAccountNumber());
 

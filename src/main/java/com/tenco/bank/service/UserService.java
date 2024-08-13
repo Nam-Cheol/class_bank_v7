@@ -3,6 +3,7 @@ package com.tenco.bank.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +15,16 @@ import com.tenco.bank.repository.interfaces.UserRepository;
 import com.tenco.bank.repository.model.User;
 import com.tenco.bank.utils.Define;
 
+import lombok.RequiredArgsConstructor;
+
 @Service // IoC의 대상(싱글톤으로 관리되는 객체)
+@RequiredArgsConstructor
 public class UserService {
 
-	private UserRepository userRepository;
-	// 구현 객체가 없는데 어떻게 인터페이스 객체를 생성해주지 ? mapper 때문에 ?
-	
-	// DI - 의존 주입
 	@Autowired
-	public UserService(UserRepository repository) {
-		this.userRepository = repository;
-	}
+	private final UserRepository userRepository;
+	@Autowired
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * 회원 등록 서비스 기능
@@ -33,9 +33,17 @@ public class UserService {
 	 */
 	@Transactional // 트랜잭션 처리는 반드시 습관화
 	public void createUser(SignUpDTO dto) {
+		
 		int result = 0;
+		System.out.println(dto.getMFile().getOriginalFilename());
 		try {
-			result = userRepository.insert(dto.toUser());
+	
+			// 코드 추가 부분
+			// 회원 가입 요청시 사용자가 던진 비밀번호 값을 암호화 처리해야 합니다.
+			String hashPwd = passwordEncoder.encode(dto.getPassword());
+			System.out.println("hashPwd : " + hashPwd);
+			dto.setPassword(hashPwd);
+//			result = userRepository.insert(dto.toUser());
 		} catch (DataAccessException e) {
 			throw new DataDeliveryException(Define.DUPLICATE_ID, HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
@@ -53,8 +61,18 @@ public class UserService {
 		// 유효성 검사는 controller에서 먼저 하자.
 		User userEntity = null; // 지역 변수 선언
 		
+		/**
+		 * 기능 수정
+		 * username 으로만 --> select 처리
+		 * 2가지 경우의 수 --> 객체가 존재하거나 null 값이 반환을 하거나
+		 * 
+		 * 객체가 존재하는 경우 사용자의 password가 존재한다 (암호화 되어 있는 값)
+		 * 
+		 * passwordEncoder 안에 matches 메소드를 사용해서 판별 가능
+		 */
+		
 		try {
-			userEntity = userRepository.findByUsernameAndPassword(dto.getUsername(), dto.getPassword());
+			userEntity = userRepository.findByUsername(dto.getUsername());
 		} catch (DataAccessException e) {
 			throw new DataDeliveryException(Define.INVALID_INPUT, HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
@@ -62,7 +80,13 @@ public class UserService {
 		}
 		
 		if(userEntity == null) {
-			throw new DataDeliveryException(Define.FAIL_TO_LOGIN, HttpStatus.BAD_REQUEST);
+			throw new DataDeliveryException("존재하지 않는 아이디입니다.", HttpStatus.BAD_REQUEST);
+		} else {
+			boolean isPwdMatched = passwordEncoder.matches(dto.getPassword(), userEntity.getPassword());
+			if(isPwdMatched == false) {
+				throw new DataDeliveryException("비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST);
+			}
+			
 		}
 		
 		return userEntity;

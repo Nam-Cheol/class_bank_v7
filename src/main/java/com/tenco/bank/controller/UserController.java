@@ -15,19 +15,17 @@ import com.tenco.bank.service.UserService;
 import com.tenco.bank.utils.Define;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller // IoC의 대상 (싱글톤 패턴으로 관리됨)
 @RequestMapping("/user") // 대문 처리
+@RequiredArgsConstructor
 public class UserController {
 
-	private UserService userService;
+	@Autowired
+	private final UserService userService;
 	private final HttpSession session;
 	
-	@Autowired // DI 처리 --> 노란 줄은 사용할 필요 없음
-	public UserController(UserService service, HttpSession session) {
-		this.userService = service;
-		this.session = session;
-	}
 	
 	// 주소 설계 -> http://localhost:8080/user/sign-up
 	/**

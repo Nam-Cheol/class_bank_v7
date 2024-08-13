@@ -15,8 +15,9 @@
 		SET 
 		number = #{number},
 		password = #{password},
-		balance = #{balance}
-		WHERE user_id = #{userId}
+		balance = #{balance},
+		user_id = #{userId}
+		WHERE id = #{id}
 	</update>
 	
 	<delete id="deleteById">
@@ -27,7 +28,7 @@
 	<select id="findByUserId" resultType="com.tenco.bank.repository.model.Account">
 		SELECT *
 		FROM account_tb
-		WHERE user_id = #{userId}
+		WHERE user_id = #{id}
 	</select>
 	
 	<select id="findByNumber" resultType="com.tenco.bank.repository.model.Account">
