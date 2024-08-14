@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +32,10 @@ public class UserService {
 	@Autowired
 	private final PasswordEncoder passwordEncoder;
 
+	// 초기 파라미터 가져오는 방법
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+	
 	/**
 	 * 회원 등록 서비스 기능
 	 * 트랜잭션 처리
@@ -122,19 +127,16 @@ public class UserService {
 			throw new DataDeliveryException("파일 크기는 20MB 이상 클 수 없습니다.", HttpStatus.BAD_REQUEST);
 		}
 		
-		// 서버 컴퓨터에 파일을 넣을 디렉토리가 있는 지 검사
-		String saveDirectory = Define.UPLOAD_FILE_DERECTORY;
-		File directory = new File(saveDirectory);
-		
-		
-		if(!directory.exists()) {
-			directory.mkdirs();
-		}
+		// 코드 수정
+		// File - getAbsolutePath() : 파일 시스템의 절대 경로를 나타냅니다.
+		// 리눅스 또는 MacOS 에 맞춰서 절대 경로를 생성 시킬 수 있다.
+//		String saveDirectory = new File(uploadDir).getAbsolutePath();
+		// workspace 안에 uploads 폴더를 세팅하지 않았기 때문에 getAbsolutePath 사용 불가 >> 코드 수정 필
 		
 		// 파일 이름 생성 (중복 이름 예방)
 		String uploadFileName = UUID.randomUUID() + "_" + mFile.getOriginalFilename();
 		// 파일 전체 경로 + 새로 생성한 파일명
-		String uploadPath = saveDirectory + File.separator + uploadFileName;
+		String uploadPath = uploadDir + File.separator + uploadFileName;
 		// 안에 무조건 File.separator을 넣자 !
 		File destination = new File(uploadPath);
 		

@@ -16,6 +16,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class User {
+	
 	private Integer id;
 	private String userName;
 	private String password;
@@ -24,4 +25,10 @@ public class User {
 	private MultipartFile mFile;
 	private String originFileName;
 	private String uploadFileName;
+	
+	public String setUpUserImage() {
+		return uploadFileName == null 
+				? "https://picsum.photos/id/1/350" : "/images/uploads/" + uploadFileName;
+	}
+	
 }

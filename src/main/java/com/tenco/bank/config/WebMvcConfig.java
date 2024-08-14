@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.tenco.bank.handler.AuthInterceptor;
@@ -28,6 +29,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(authInterceptor)
 				.addPathPatterns("/account/**")
 				.addPathPatterns("/auth/**");
+	}
+	
+	// 코드 추가
+	// 서버 컴퓨터 상에 실제 이미지 경로지만 (C:\\work_spring\\uploads)
+	// 프로젝트 상에서 (클라이언트가 HTML 소스로 보이는 경로는) /images/uploads/** 로 설정
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		
+		registry.addResourceHandler("/images/uploads/**")
+				.addResourceLocations("file:\\C:\\work_spring\\uploads/");
+		
 	}
 	
 	@Bean // IoC 대상 (싱글톤 처리)
