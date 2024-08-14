@@ -16,6 +16,11 @@
 			<label for="pwd">Password:</label> <input type="password" class="form-control" placeholder="Enter password" id="pwd" name="password" value="1234">
 		</div>
 		<button type="submit" class="btn btn-primary">로그인</button>
+		<div>
+			<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=9c72754a52f84b89440dd568ef3b2507&redirect_uri=http://localhost:8080/user/kakao" class="mt-4">
+			<img alt="" src="/images/kakao_login_small.png">
+			</a>
+		</div>
 	</form>
 	<!-- end of content.jsp (xxx.jsp) -->
 </div>

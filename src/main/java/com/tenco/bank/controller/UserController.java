@@ -1,15 +1,28 @@
 package com.tenco.bank.controller;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.tenco.bank.dto.SignInDTO;
 import com.tenco.bank.dto.SignUpDTO;
 import com.tenco.bank.handler.exception.DataDeliveryException;
+import com.tenco.bank.handler.exception.RedirectException;
 import com.tenco.bank.repository.model.User;
 import com.tenco.bank.service.UserService;
 import com.tenco.bank.utils.Define;
@@ -112,4 +125,43 @@ public class UserController {
 		session.invalidate(); // 로그아웃 됨
 		return "redirect:/user/sign-in";
 	}
+	
+	@GetMapping("/kakao")
+	@ResponseBody
+	public ResponseEntity<?> kakaoLogin(@RequestParam(name = "code", required = false) String code, @RequestParam(name = "error", required = false) String error) {
+		
+		if (code != null) {
+			// 로그인이 성공한 상태
+			System.out.println("code : " + code);
+			URI uri = UriComponentsBuilder
+					.fromHttpUrl("https://kauth.kakao.com/oauth/token")
+					.build()
+					.toUri();
+			
+			RestTemplate restTemplate1 = new RestTemplate();
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-type", "application/x-www-form-urlencoded; charset=utf-8");
+
+			MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+			params.add("grant_type", "authorization_code");
+			params.add("client_id", "9c72754a52f84b89440dd568ef3b2507");
+			params.add("redirect_uri", "http://localhost:8080/user/kakao");
+			params.add("code", code);
+
+			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+			ResponseEntity<String> response = restTemplate1.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(response.getBody());
+		} else {
+			if(error != null) {
+				throw new RedirectException(error, HttpStatus.BAD_REQUEST);
+			} else {
+				throw new RedirectException(Define.UNKNOWN, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+	}
+	
 }
