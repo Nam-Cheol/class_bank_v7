@@ -1,13 +1,19 @@
 package com.tenco.bank.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,16 +51,17 @@ public class UserService {
 	public void createUser(SignUpDTO dto) {
 		
 		int result = 0;
-		System.out.println("----------------------------------");
-		System.out.println(dto.getMFile().getOriginalFilename());
-		System.out.println("----------------------------------");
 		
-		if(!dto.getMFile().isEmpty()) {
-			// 파일 업로드 로직 구현
-			String[] fileName = uploadFile(dto.getMFile());
+		if(dto.getMFile() != null ) {
 			
-			dto.setOriginFileName(fileName[0]);
-			dto.setUploadFileName(fileName[1]);
+			if(!dto.getMFile().isEmpty()) {
+				// 파일 업로드 로직 구현
+				String[] fileName = uploadFile(dto.getMFile());
+				
+				dto.setOriginFileName(fileName[0]);
+				dto.setUploadFileName(fileName[1]);
+				
+			}
 			
 		}
 		
@@ -149,6 +156,15 @@ public class UserService {
 		}
 		
 		return new String[] {mFile.getOriginalFilename(), uploadFileName};
+	}
+	
+	/**
+	 * username 사용자 존재 여부 조회
+	 * @param dto
+	 * @return User or null
+	 */
+	public User searchUsername(String username) {
+		return userRepository.findByUsername(username);
 	}
 	
 }
