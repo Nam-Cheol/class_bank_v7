@@ -25,6 +25,10 @@ repositories {
 }
 
 dependencies {
+
+	// Mustache와 JPA를 사용하기 위한 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+
 	// 의존성 추가
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '3.0.0'

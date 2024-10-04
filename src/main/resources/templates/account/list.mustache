@@ -1,0 +1,38 @@
+{{> layout/header }} <!-- header.mustache 포함 -->
+
+<!-- start of main content -->
+<div class="col-sm-8">
+	<h2>계좌 목록(인증)</h2>
+	<h5>Bank App에 오신 걸 환영합니다.</h5>
+
+    <!-- 계좌가 없는 경우와 있는 경우를 분리 -->
+    <!-- 계좌가 있는 사용자일 경우 반복문을 활용 -->
+    {{#isAccountList}}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>계좌 번호</th>
+                <th>잔액</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#accountList}}
+                <tr>
+                    <td><a href="/account/detail/{{id}}?type=all">{{number}}</a></td>
+                    <td>{{balance}}</td>
+                </tr>
+            {{/accountList}}
+            </tbody>
+        </table>
+    {{/isAccountList}}
+
+	{{^isAccountList}}
+	<div class="jumbotron display-4">
+		<h5>아직 생성된 계좌가 없습니다.</h5>
+	</div>
+	{{/isAccountList}}
+
+</div>
+<!-- end of main content -->
+
+{{> layout/footer }} <!-- footer.mustache 포함 -->

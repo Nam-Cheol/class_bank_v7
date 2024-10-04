@@ -7,16 +7,19 @@ server:
       force: true # 요청과 응답에 대해 이 인코딩을 !강제!로 사용하도록 설정합니다.
 
 spring:
-  mvc:
-    view:
-      prefix: /WEB-INF/view/ # JSP 파일이 위치한 디렉토리 접두사를 설정합니다.
-      suffix: .jsp # 뷰 이름에 자동으로 추가될 파일 확장자를 설정합니다.
+  mustache:
+    servlet:
+      expose-session-attributes: true  # Mustache 템플릿에서 세션 속성에 접근할 수 있도록 허용
+      expose-request-attributes: true  # Mustache 템플릿에서 요청 속성에 접근할 수 있도록 허용
+    prefix: classpath:/templates/  # Mustache 템플릿 파일 경로 설정 (resources/templates)
+    suffix: .mustache  # Mustache 템플릿 파일 확장자 설정
+
   datasource:
-    url: jdbc:h2:mem:bankdb;MODE=MySQL # 데이터 베이스 연결을 위한 URL을 설정합니다.
-    driver-class-name: org.h2.Driver # 드라이버 클래스를 설정합니다.
-    username: sa # 사용자 ID를 지정
-    password: '' # DB 비밀번호 여기서는 빈 문자열로 설정
-    
+    url: jdbc:h2:mem:bankdb;MODE=MySQL # 데이터베이스 연결을 위한 URL 설정 (H2를 MySQL 모드로 사용)
+    driver-class-name: org.h2.Driver # 드라이버 클래스 설정
+    username: sa # 데이터베이스 사용자 ID
+    password: '' # 데이터베이스 비밀번호 (빈 문자열)
+
   sql:
     init:
       schema-locations:

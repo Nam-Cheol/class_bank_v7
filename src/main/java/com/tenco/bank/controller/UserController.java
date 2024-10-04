@@ -33,7 +33,7 @@ public class UserController {
 	/**
 	 * 회원 가입 페이지 요청
 	 * 주소 설계 http://localhost:8080/user/sign-up
-	 * @return signUp.jsp
+	 * @return signUp.mustache
 	 */
 	@GetMapping("/sign-up")
 	public String signUpPage() {

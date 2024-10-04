@@ -16,7 +16,7 @@
 		number = #{number},
 		password = #{password},
 		balance = #{balance}
-		WHERE user_id = #{userId}
+		WHERE number = #{number}
 	</update>
 	
 	<delete id="deleteById">

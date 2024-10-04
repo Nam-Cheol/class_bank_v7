@@ -86,38 +86,42 @@ public class AccountService {
 	@Transactional
 	public void updateAccountWithdraw(WithdrawalDTO dto, Integer principalId) {
 
+		// 1. 계좌 조회
 		Account accountEntity = accountRepository.findByNumber(dto.getWAccountNumber());
 
-		// 1
-//		accountEntity.checkAccount(accountEntity);
+		// 계좌가 존재하지 않는 경우 예외 처리
 		if(accountEntity == null) {
 			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.BAD_REQUEST);
 		}
-		// 2
-		accountEntity.checkOwner(principalId);
-		// 3
-		accountEntity.checkPassword(dto.getWAccountPassword());
-		// 4
-		accountEntity.checkBalance(dto.getAmount());
-		// 5
-		accountEntity.withDraw(dto.getAmount());
-		// 6
-		accountRepository.updateById(accountEntity);
 
-		//INSERT INTO history_tb(amount, w_account_id, d_account_id, w_balance, d_balance)
-		//VALUES (#{amount}, #{wAccount}, #{dAccount}, #{wBalance}, #{dBalance})
-		//7
-		
+		// 계좌 소유자 및 기타 정보 검증
+		accountEntity.checkOwner(principalId);
+		accountEntity.checkPassword(dto.getWAccountPassword());
+		accountEntity.checkBalance(dto.getAmount());
+
+		// 2. 계좌 업데이트 전에 중복된 계좌 번호가 없는지 체크
+		Account duplicateAccount = accountRepository.findByNumber(dto.getWAccountNumber());
+		if (duplicateAccount != null && !duplicateAccount.getId().equals(accountEntity.getId())) {
+			// 이미 동일한 번호로 존재하는 다른 계좌가 있다면 예외 발생
+			throw new DataDeliveryException("중복된 계좌 번호입니다.", HttpStatus.CONFLICT);
+		}
+
+		// 3. 출금 처리
+		accountEntity.withDraw(dto.getAmount());
+		accountRepository.updateById(accountEntity); // 업데이트
+
+		// 4. 거래 내역 저장
 		int rowResultCount = historyRepository.insert(History.builder()
-														.amount(dto.getAmount())
-														.wBalance(accountEntity.getBalance())
-														.wAccount(accountEntity.getId())
-														.build());
-												
-		if(rowResultCount != 1) {
+				.amount(dto.getAmount())
+				.wBalance(accountEntity.getBalance())
+				.wAccount(accountEntity.getId())
+				.build());
+
+		if (rowResultCount != 1) {
 			throw new DataDeliveryException(Define.FAILED_PROCESSING, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 
 	// 입금 기능 만들기
 	// 1. 입금계좌 유효
