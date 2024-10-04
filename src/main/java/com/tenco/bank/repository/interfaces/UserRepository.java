@@ -1,25 +1,16 @@
 package com.tenco.bank.repository.interfaces;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.tenco.bank.repository.model.User;
 
-// MyBatis 설정 확인
+public interface UserRepository extends JpaRepository<User, Integer> {
 
-// UserRepository 인터페이스와 user.xml 파일을 매칭 시킨다.
-@Mapper // 반드시 선언해야 동작합니다.
-public interface UserRepository {
+	// username과 password로 사용자 조회 (로그인 기능)
+	@Query("SELECT u FROM User u WHERE u.userName = :username AND u.password = :password")
+	User findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 
-	public int insert(User user);
-	public int updateById(User user);
-	public int deleteById(Integer id);
-	public User findById(Integer id);
-	public List<User> findAll();
-	
-	// 로그인 기능 x (username, password) --> return User ..
-	// 주의 ! - 매개 변수 2개 이상 시 반드시 @Param 어노테이션을 사용하자
-	public User findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+	// 필요시 추가적인 커스텀 메서드 작성 가능
 }

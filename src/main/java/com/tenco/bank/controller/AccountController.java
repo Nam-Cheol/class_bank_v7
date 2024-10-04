@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.tenco.bank.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -31,17 +33,13 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller // IoC 대상 (싱글톤으로 관리)
 @RequestMapping("/account")
+@RequiredArgsConstructor
 public class AccountController {
 
 	// 계좌 생성 화면 요청 - DI 처리
 	private final HttpSession session;
 	private final AccountService service;
-
-	@Autowired
-	public AccountController(HttpSession session, AccountService service) {
-		this.session = session;
-		this.service = service;
-	}
+	private final UserService userService;
 
 	/**
 	 * 계좌 생성 페이지 요청 주소 설계 : http://localhost:8080/account/save
@@ -83,10 +81,9 @@ public class AccountController {
 			throw new DataDeliveryException(Define.ENTER_YOUR_ACCOUNT_NUMBER, HttpStatus.BAD_REQUEST);
 		}
 
-		service.createAccount(dto, principal.getId());
+		service.createAccount(dto, principal);
 
-		// TODO - 계좌 리스트로 이동 예정
-		return "redirect:/index";
+		return "redirect:/account/list";
 	}
 
 	/**
@@ -94,7 +91,7 @@ public class AccountController {
 	 * 
 	 * @return
 	 */
-	@GetMapping({ "/list", "/" })
+	@GetMapping("/list")
 	public String listPage(Model model) {
 
 		// 1. 인증검사
@@ -106,19 +103,13 @@ public class AccountController {
 		// 2. 유효성 검사
 
 		// 3. 서비스 호출
-		List<Account> accountList = service.readAccountListByUserId(principal.getId());
+		List<Account> accountList = userService.getUserAccounts(principal.getId());
 
 		// JSP에 데이터를 넣어주는 방법
 		model.addAttribute("accountList", accountList);
 		model.addAttribute("isAccountList", !accountList.isEmpty());
 
 		return "account/list";
-	}
-
-	@PostMapping({ "/list", "/" })
-	public String listProc() {
-
-		return "redirect:/account/list";
 	}
 
 	/**
